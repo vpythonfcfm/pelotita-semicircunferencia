@@ -11,7 +11,8 @@ def ec(y, t, m, g, r):
 def soledo(y0, t, m, g, r):
 	'''
 	Resuelve la ecuacion diferencial de la pelotita y devuelve
-	theta para cada instante t
+	una matriz de len(t)x2 con theta y theta punto para cada
+	instante t
 	y0: vector de condiciones iniciales: [theta0, thetapunto0]
 	t: vector con el tiempo (se recomienda numpy.linspace)
 	m: masa de la pelotita
@@ -27,4 +28,4 @@ def soledo(y0, t, m, g, r):
 	no se va a mover, quedara en reposo sobre la punta de la
 	semiesfera
 	'''
-	return odeint(ec, y0, t, args=(m,g,r))[:,0]
+	return odeint(ec, y0, t, args=(m,g,r))
