@@ -25,7 +25,8 @@ scene.forward = vector(0,-.30,-10)
 ############Definicion del escenario
 
 #Declaración de objetos
-e=sphere(pos=vector(0,rA+rE,0), radius=rE, color=color.red)
+e=sphere(pos=vector(0,rA,0), radius=rE, color=color.red,
+	make_trail=True, trail_type="curve")
 ruta=ring(pos=vector(0,0,0), axis=vector(0,0,1),radius=rA, thickness=0.1) #Por defecto será blanco
 #Vectores de fuerza
 	#Normal
@@ -49,9 +50,15 @@ while True:
 			
 			e.pos=normal.pos=p.pos=vector(rA*n.sin(theta),rA*n.cos(theta),0)
 			normal.axis=m*(g*n.cos(theta)-rA*(omega**2))*vector(sin(theta),cos(theta),0)
-		
+			if not e.make_trail:
+				e.make_trail = True
+				e.clear_trail()
+				 
 		else:  #Caida libre
+			if not e.make_trail: e.make_trail = True
 			e.pos=p.pos=r0+v0*(t[i]-t[k])+0.5*((t[i]-t[k])**2)*vector(0,-g,0)
 			normal.visible = False
+	e.make_trail=False
+	e.clear_trail()
 
 
