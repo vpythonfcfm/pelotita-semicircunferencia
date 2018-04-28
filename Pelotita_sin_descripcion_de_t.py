@@ -2,18 +2,27 @@ from vpython import *
 from soledo import soledo
 import numpy as n
 
+def findZero(L):
+	for i in range(len(L)-1):
+		print(i, i+1, L[i], L[i+1])
+		if L[i] * L[i+1] <= 0:
+			return i if abs(L[i]) <= abs(L[i+1]) else i+1
+	return len(L)-1
+
 #Declaración de variables
 m=2 #Kg
 rE=1 #Esfera que cae
 rA=15 #Esfera por la que desliza
 g=9.8 #m/s^2
-y0=[pi/100,0] #posicion inicial
+omega0 = 1.3
+y0=[n.pi,omega0] #posicion inicial
 t=n.linspace(0,7,501) #vector del tiempo
 #Lista de thetas y thetas punto jaja saludos
 sol=soledo(y0,t,m,g,rA)
 T = sol[:,0] #Lista theta
 Tp = sol[:,1] #lista theta punto
-k = n.argmin(abs(m*(g*n.cos(T)-rA*(Tp**2)))) #indice del theta en el que se "anula" la normal
+N = m*(g*n.cos(T)-rA*(Tp**2))
+k = findZero(N) #indice del theta en el que se "anula" la normal
 v0=vector(rA*n.cos(T[k])*Tp[k],-rA*n.sin(T[k])*Tp[k],0) #Velocidad al anularse la normal
 r0=vector(rA*n.sin(T[k]),rA*n.cos(T[k]),0) #Posicion cuando se anula la normal
 
@@ -25,7 +34,7 @@ scene.forward = vector(0,-.30,-10)
 ############Definicion del escenario
 
 #Declaración de objetos
-e=sphere(pos=vector(0,rA,0), radius=rE, color=color.red,
+e=sphere(pos=vector(0,-rA,0), radius=rE, color=color.red,
 	make_trail=True, trail_type="curve")
 ruta=ring(pos=vector(0,0,0), axis=vector(0,0,1),radius=rA, thickness=0.1) #Por defecto será blanco
 #Vectores de fuerza
@@ -42,6 +51,7 @@ scene.autoscale = False
 
 while True:
 	normal.visible = True
+	past_pos = 1
 	for i in range(len(T)):
 		rate(60)
 		if i<k: #MCU
@@ -49,7 +59,7 @@ while True:
 			omega = Tp[i]
 			
 			e.pos=normal.pos=p.pos=vector(rA*n.sin(theta),rA*n.cos(theta),0)
-			normal.axis=m*(g*n.cos(theta)-rA*(omega**2))*vector(sin(theta),cos(theta),0)
+			normal.axis=-m*(g*n.cos(theta)-rA*(omega**2))*vector(sin(theta),cos(theta),0)
 			if not e.make_trail:
 				e.make_trail = True
 				e.clear_trail()
@@ -58,6 +68,7 @@ while True:
 			if not e.make_trail: e.make_trail = True
 			e.pos=p.pos=r0+v0*(t[i]-t[k])+0.5*((t[i]-t[k])**2)*vector(0,-g,0)
 			normal.visible = False
+
 	e.make_trail=False
 	e.clear_trail()
 
