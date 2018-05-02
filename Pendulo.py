@@ -43,15 +43,19 @@ dt=1.0/60 # intervalo de tiempo
 ang=atan(1.0*Pen.pos.y/Pen.pos.x) #angulo
 omega = 0.5 # velocidad angular inicial
 theta=pi/4 # amplitud
+n = 0 #contador
 
 while True:
 
 	rate(60)  # Espera 1/60 s para que no se vea tan rapido
 	theta = theta + omega*dt
+	
+	if abs(omega)<0.008: # Para que el vector theta posea modulo, dirección, y sentido de omega
+                n = n + 1
 
 	# actualiza la direccion de r y theta
 	rarr.axis = vector(cos(theta),sin(theta),0)
-	tarr.axis = (r*0.4)*sin(ang)*vector(-sin(theta),cos(theta), 0)
+	tarr.axis = ((-1)**n)*cos(ang)*vector(-sin(theta),cos(theta), 0)
 
 	# actualiza la direccion de r, theta y el pendulo
 	rarr.pos = tarr.pos = Pen.pos = vector(r*cos(theta), r*sin(theta),
