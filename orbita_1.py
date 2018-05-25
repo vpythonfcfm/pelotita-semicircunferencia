@@ -1,5 +1,4 @@
 from vpython import *
-from mathematics import *
 #Datos
 
 G=6.67**(-11) #cte. gravitacion universal
@@ -14,7 +13,7 @@ dt=0.01 #invervalos de tiempo
 
 #objetos orbitando
 planet=sphere(pos=vector(0,0,0),radius=R/10,color=color.blue)
-moon=sphere(pos=vector(R+h,0,0),radius=r/10,color=color.white,maker_train=True)
+moon=sphere(pos=vector(R+h,0,0),radius=r/10,color=color.white,maker_trail=True)
 
 # vectores unitarios
 x_i=arrow(pos=vector(0,0,0),axis=vector(R*0.5,0,0),color=color.red,shaftwidth=0.05)
