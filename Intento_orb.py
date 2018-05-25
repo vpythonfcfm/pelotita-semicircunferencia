@@ -1,7 +1,7 @@
 #Importaciones
 from vpython import *
 import numpy as np
-
+#PROBLEMA Se va al infinito todavia
 #Variables
 G=6.67**(-11) #Constante gravitacional
 M=6*(10**12) #Masa de la tierra
