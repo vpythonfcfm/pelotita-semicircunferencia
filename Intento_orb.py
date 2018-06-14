@@ -1,6 +1,6 @@
-#Importaciones
 from vpython import *
 import numpy as np
+
 #PROBLEMA Se va al infinito todavia
 #Variables
 G=6.67**(-11) #Constante gravitacional

@@ -1,14 +1,29 @@
 from vpython import *
-#Datos
+'''Datos del problema
+****** ESCRIBIR DESCRIPCION *******
 
-G=6.67**(-11) #cte. gravitacion universal
-M=10*10**10# masa planet kg (debe ser de ese orden para que el sistema se pueda mover
-R=10 #radio planet mts
+Constante de gravitacion universal: G
+radio planeta (Masa mayor)        : Rp
+Masa mayor                        : M
+radio satelite (Masa menor)       : rs
+Radio de trayectoria              : r
+Radio de tray 1 d                 : dr
+angulo                            : theta
+theta 1 derivada                  : dtheta
+tiempo                            : dt
+
+distancia entre planeta y satelite: h
+
+'''
+
+G=6.67**(-11) 
+M=10*10**10
+R=10
 r=5.0  #radio moon mts
-h=2.0  #distancia entre ambos cuerpos mts
-theta=0  #angulo inicial
-theta_punto=((G*M)/(R+h)**3.0)**(1.0/2.0) #velocidad angular sacada de la EDO
-dt=0.01 #invervalos de tiempo
+h=2.0  
+theta=0  
+theta_punto=((G*M)/(R+h)**3.0)**(1.0/2.0) 
+dt=0.01
 
 
 #objetos orbitando

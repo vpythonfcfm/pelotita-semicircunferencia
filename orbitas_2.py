@@ -1,23 +1,49 @@
 from vpython import *
-#Datos
 
-G=6.67**(-11) #cte. gravitacion universal
-M=6*10**12# masa planet kg (debe ser de ese orden para que el sistema se pueda mover
-a=30   #semieje mayor
-b=15   #semieje menor
-f=10   #foco donde esta el planeta
-R=50 #radio planet mts
-r=10  #radio moon mts
-theta=0  #angulo inicial
-r_o=1/(((cos(theta)/a)**2)+((sin(theta)/b)**2))**0.5 #ecuacion de la elipse en coordenadas polares
-theta_punto=((G*M)/(r_o)**3.0)**(1.0/2.0) #velocidad angular sacada de la EDO
-dt=0.01 #invervalos de tiempo
+'''Datos del problema
+****** ESCRIBIR DESCRIPCION *******
 
+Constante de gravitacion universal: G
+radio planeta (Masa mayor)        : Rp
+Masa mayor                        : M
+radio satelite (Masa menor)       : rs
+Radio de trayectoria              : r
+Radio de tray 1 d                 : dr
+angulo                            : theta
+theta 1 derivada                  : dtheta
+tiempo                            : dt
 
+e = (a^2+b^2)**(0.5)/a
+ea = c
+e = c/a
+
+'''
+
+'''funcion que entrega lista de elementos de una elipse'''
+# float float -> list
+#L=[directriz, b, c]
+def elipse(e,a):
+  directriz = a/e - e*a
+  b = pow(directriz - pow(a,2),0.5)
+  c = pow(pow(a,2)+pow(b,2),0.5)
+  return [directriz, b , c]
+
+G=6.67**(-11)
+M=6*10**12
+e = 0.2
+a = 30
+L = elipse(e,a)
+b = L[1]
+Rp=50 
+rs=10 
+theta=0 
+r_o=1/(((cos(theta)/a)**2)+((sin(theta)/b)**2))**0.5 
+dtheta=((G*M)/(r_o)**3.0)**(1.0/2.0)
+dt=0.01
 
 #objetos orbitando
-planet=sphere(pos=vector(f,0,0),radius=R/10,color=color.blue)
-moon=sphere(pos=vector(a,0,0),radius=r/10,color=color.white,maker_train=True)
+planet=sphere(pos=vector(f,0,0),radius=Rp/10,color=color.blue)
+moon=sphere(pos=vector(a,0,0),radius=rs/10,color=color.white,maker_train=True)
 
 #vectores unitarios centrales
 x_i=arrow(pos=vector(0,0,0),axis=vector(a+10,0,0),color=color.red,shaftwidth=0.05)
@@ -52,7 +78,6 @@ txt_theta = text(text='Φ', pos=theta_o.pos + theta_o.axis, axis=theta_o.axis, a
                 color=color.white, billboard=True, emissive=True)
 
 #movimiento choro eliptico
-
 while True:
     rate(100)
     #actualizacion r_o c/r al angulo theta
@@ -67,15 +92,12 @@ while True:
 
     #actualizacion posicion vectores polares
     p_r.pos = theta_o.pos = moon.pos
-
-
-
     #Letritas
     txt_p.pos = p_r.pos + p_r.axis
     txt_theta.pos = theta_o.pos + theta_o.axis
 
     #cambio angulo theha
-    theta=theta+theta_punto*dt
+    theta=theta+dtheta*dt
 
     print(r_o) #print que confirma que el radio va cambiando c/r al angulo y forma una elipse bonita
 
