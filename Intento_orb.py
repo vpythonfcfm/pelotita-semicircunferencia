@@ -38,7 +38,7 @@ txt_ro = text(text='ρ', pos=roT.pos + roT.axis, axis=roT.axis, align='center', 
 
 #Movimiento
 while True :
-	rate(100)
+	rate(1000)
 	#EDO
 	r_oo= rLT*(theta_o0**2) + ((-G*M)/(rLT**2))
 	theta_oo= ((-1)*2*r_o0*theta_o0)/rLT
