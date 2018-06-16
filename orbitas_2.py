@@ -82,7 +82,7 @@ dt       =0.001
 sol=sphere(pos=vector(-c_elipse[3],0,0),radius=CRmayor/10,color=color.yellow)
 
 planet=sphere(pos=vector(r*cos(theta)-c_elipse[3],r*sin(theta),0),radius=CRmenor/10,
-              color=color.orange,make_trail=True,trail_type='points', interval=4)
+              color=color.orange,make_trail=True, trail_type='points', interval=10)
 
 #vectores unitarios centrales
 x_i = unitarios(1,"x",a,c_elipse[1])
