@@ -58,6 +58,3 @@ while True :
 	roT.axis=vector(np.cos(theta),np.sin(theta),0)
 	txt_thetaT.pos=thetaT.pos+thetaT.axis
 	txt_ro.pos=roT.pos+roT.axis
-
-
-
