@@ -1,7 +1,8 @@
 #Importaciones
 from vpython import *
 import numpy as np
-#PROBLEMA Se va al infinito todavia
+#PROBLEMA describe bien la orbita , pero no se cierra por el error acumulado que se genera con el metodo
+#tambien note que los ejes polares no se notan pues su magnitud es pequeña c/r al tamaño de la luna (es decir , estan dentro de ella)
 #Variables
 G=6.67**(-11) #Constante gravitacional
 M=6*(10**12) #Masa de la tierra
@@ -11,7 +12,7 @@ theta0=0 #Angulo inicial
 b=147 #Semieje menor de la elipse
 f=(r0**2-b**2)**0.5 #Foco de la elipse
 rLT = r0-f #Distancia Tierra luna inicial
-r_o0=30
+r_o0=2 #velocidad radial , debe ser pequeña para que no escaoe de la orbita 
 theta_o0=(r_o0**2)/rLT
 pos0L=vector(r0,0,0) #Posicion inicial luna
 pos0T=vector(0,0,0) #Posicion inicial tierra
@@ -36,9 +37,8 @@ txt_ro = text(text='ρ', pos=roT.pos + roT.axis, axis=roT.axis, align='center', 
                 color=color.white, billboard=True, emissive=True)
 
 #Movimiento
-print(rLT)
 while True :
-	rate(100)
+	rate(1000)
 	#EDO
 	r_oo= rLT*(theta_o0**2) + ((-G*M)/(rLT**2))
 	theta_oo= ((-1)*2*r_o0*theta_o0)/rLT
@@ -56,5 +56,5 @@ while True :
 	luna.pos=thetaT.pos=roT.pos=vector(r*np.cos(theta),r*np.sin(theta),0)
 	thetaT.axis=vector(np.sin(theta),np.cos(theta),0)
 	roT.axis=vector(np.cos(theta),np.sin(theta),0)
-
-
+	txt_thetaT.pos=thetaT.pos+thetaT.axis
+	txt_ro.pos=roT.pos+roT.axis

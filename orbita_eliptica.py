@@ -17,7 +17,6 @@ excentricidad                       : e
 semiejemayor                        : a
 
 '''
-
 running = True
 
 def Run(b):
@@ -67,6 +66,7 @@ def textVector(texto, flecha, altura):
               billboard = True, emissive = True)
   return title
 
+
 G        = 6.7e-11
 M        = 30e12
 e        = 0.8
@@ -93,6 +93,19 @@ planet_circulo=sphere(pos=vector(rchico*cos(thetachico)-c_elipse[3],rchico*sin(t
 
 planet=sphere(pos=vector(r*cos(theta)-c_elipse[3],r*sin(theta),0),radius=CRmenor,
               color=color.orange,make_trail=True, trail_type='points', interval=200)
+
+CRmayor  =20 
+CRmenor  =10 
+theta    =0
+r        = a*(1-pow(e,2))/(1-e*cos(theta))
+dtheta   =(G*M/pow(r,3))**(0.5)
+dt       =0.001
+
+#objetos orbitando
+sol=sphere(pos=vector(-c_elipse[3],0,0),radius=CRmayor/10,color=color.yellow)
+
+planet=sphere(pos=vector(r*cos(theta)-c_elipse[3],r*sin(theta),0),radius=CRmenor/10,
+              color=color.orange,make_trail=True, trail_type='points', interval=10)
 
 #vectores unitarios centrales
 x_i = unitarios(1,"x",a,c_elipse[1])
@@ -122,7 +135,6 @@ txt_rho = textVector('P',rho,1)
 
 dthetaFlecha=arrow(pos=planet.pos,axis=vector(-sin(theta),cos(theta),0),color=color.red,shaftwidth = 0.1)
 txt_dtheta = textVector('0',dthetaFlecha,1)
-
 scene.caption = "\nVariacion en velocidad angular planeta naranjo: \n\n"
 
 def setspeed(s):
@@ -139,6 +151,15 @@ def setspeed2(slide):
 sl2 = slider(min=0, max=5, value=dthetachico, length=220, bind=setspeed2, right=15)
 wt2 = wtext(text='{:1.2f}'.format(sl2.value))
 scene.append_to_caption(' -- velocidad angular 2\n')
+=======
+scene.caption = "\nVariacion en el valor de la excentricidad: \n\n"
+
+def setspeed(s):
+    wt.text = '{:1.2f}'.format(s.value)
+    
+sl = slider(min=0.3, max=3, value=dtheta, length=220, bind=setspeed, right=15)
+wt = wtext(text='{:1.2f}'.format(sl.value))
+scene.append_to_caption(' -- (0 < e < 1)\n')
 
 #movimiento choro eliptico
 while True:
@@ -151,6 +172,8 @@ while True:
       planet.pos=vector(r*cos(theta)-c_elipse[3],r*sin(theta),0)
 
       planet_circulo.pos=vector(rchico*cos(thetachico)-c_elipse[3],rchico*sin(thetachico),0)
+      #actualizacion mov satelite c/r al angulo
+      planet.pos=vector(r*cos(theta)-c_elipse[3],r*sin(theta),0)
 
       #actualizacion direccion y sentido vectores polares
       rho.axis = vector(cos(theta), sin(theta), 0)*5
@@ -165,3 +188,4 @@ while True:
       #cambio angulo theha
       theta=theta+sl.value*dt
       thetachico =thetachico+sl2.value*dt
+      theta=theta+sl.value*dt
