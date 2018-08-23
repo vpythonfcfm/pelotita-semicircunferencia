@@ -1,76 +1,175 @@
 from vpython import *
-from soledo import soledo
-import numpy as n
+from math import *
+import numpy as np
 
 '''Datos del problema
-****** ESCRIBIR DESCRIPCION 
 
-Para la cinematica definiremos un MCU hasta theta=48,2°, pues en ese ángulo la normal se anula. Después será 
-caída libre.
-
-*******
-
-masa particula           : m
-Esfera que cae           : rE
-Esfera por la que desliza: rA
-posicion inicial         : y0
-gravedad                 : g
-tiempo                   : dt
+Constante de gravitacion universal  : G
+Radio Cuerpo masa mayor             : Cmayor
+Masa mayor                          : M
+Radio Cuerpo masa menor             : Cmenor
+Vector trayectoria                  : r
+Vector trayectoria, primera derivada: dr
+angulo                              : theta
+theta 1 derivada                    : dtheta
+tiempo                              : dt
+excentricidad                       : e
+semiejemayor                        : a
 
 '''
+running = True
 
-m=2 
-rE=1 
-rA=15 
-g=9.8 
-y0=[pi/100,0] 
-dt=n.linspace(0,7,501)
+def Run(b):
+    global running
+    running = not running
+    if running: b.text = "Pause"
+    else: b.text = "Run"
 
-#Lista de thetas y thetas punto jaja saludos
-sol=soledo(y0,dt,m,g,rA)
-T = sol[:,0] #Lista theta
-Tp = sol[:,1] #lista theta punto
-k = n.argmin(abs(m*(g*n.cos(T)-rA*(Tp**2)))) #indice del theta en el que se "anula" la normal
-v0=vector(rA*n.cos(T[k])*Tp[k],-rA*n.sin(T[k])*Tp[k],0) #Velocidad al anularse la normal
-r0=vector(rA*n.sin(T[k]),rA*n.cos(T[k]),0) #Posicion cuando se anula la normal
+button(text="Pause", pos=scene.title_anchor, bind=Run)
 
-''' Ajustes pantalla '''
-scene.width = 600
-scene.height = 600
-scene.forward = vector(0,-.30,-10)
 
-#Declaración de objetos
-e=sphere(pos=vector(0,rA,0), radius=rE, color=color.red,
-	make_trail=True, trail_type="curve")
-ruta=ring(pos=vector(0,0,0), axis=vector(0,0,1),radius=rA, thickness=0.1) #Por defecto será blanco
-#Vectores de fuerza
-	#Normal
-normal=arrow(pos=e.pos, axis=vector(0,m*g,0),color=color.yellow, shaftwidth=0.1)
+# float float -> list
+# devuelve lista de elementos de una elipse
+# L=[directriz, b, c]
+def elipse(e,a):
+  directriz = a/e - e*a
+  dif = abs((e*a)**2-a**2)
+  f = e*a
+  b = dif**0.5
+  c = (a**2+b**2)**0.5
+  return [directriz, b , c, f]
 
-	#Peso
-p=arrow(pos=e.pos, axis=vector(0,-m*g,0),color=color.orange, shaftwidth=0.1)
+# unitarios de elipse: +-1 str str -> arrow
+def unitarios(signo, eje, a, b):
+  vect = arrow()
+  vect.pos = vector(0,0,0)
+  vect.shaftwidth = 0.05
+  if (abs(signo)==signo):
+    if (eje == "x"):
+      vect.axis = vector(a+10,0,0)
+      vect.color = color.red
+    elif (eje == "y"):
+      vect.axis = vector(0,b+10,0)
+      vect.color = color.yellow
+  else:
+    if(eje == "x"):
+      vect.axis = vector(-(a+10),0,0)
+      vect.color = color.red
+    elif (eje == "y"):
+      vect.axis = vector(0,-(b+10),0)
+      vect.color = color.yellow
+  return vect
 
-scene.autoscale = False
+def textVector(texto, flecha, altura):
+  title = text(text= texto, pos=flecha.pos+flecha.axis, axis = flecha.axis, 
+              align = 'center', height = altura, color = color.white,
+              billboard = True, emissive = True)
+  return title
 
+
+G        = 6.7e-11
+M        = 30e12
+e        = 0.8
+a        = 30
+c_elipse = elipse(e,a)
+CRmayor  = 2
+CRmenor  = 1
+theta    = 0
+r        = a*(1-pow(e,2))/(1-e*cos(theta))
+dtheta   = (G*M/pow(r,3))**(0.5)
+dt       = 0.001
+
+#planeta de orbita circular
+rchico = a*(1-pow(e,2))/(1+e)
+thetachico = 0
+dthetachico = (G*M/pow(rchico,3))**(0.5)
+
+#objetos orbitando
+sol=sphere(pos=vector(c_elipse[3],0,0),radius=CRmayor,color=color.yellow)
+
+planet_circulo=sphere(pos=vector(rchico*cos(thetachico)+c_elipse[3],rchico*sin(thetachico),0),
+                radius=CRmenor-2, color=color.green
+              ,make_trail=True, trail_type='points', interval=200)
+
+planet=sphere(pos=vector(r*cos(theta)-c_elipse[3],r*sin(theta),0),radius=CRmenor,
+              color=color.orange,make_trail=True, trail_type='points', interval=200)
+
+CRmayor  =20 
+CRmenor  =10 
+theta    =0
+r        = a*(1-pow(e,2))/(1-e*cos(theta))
+dtheta   =(G*M/pow(r,3))**(0.5)
+dt       =0.001
+
+
+#vectores unitarios centrales
+x_i = unitarios(1,"x",a,c_elipse[1])
+_x_i = unitarios(-1,"x",a,c_elipse[1])
+y_j = unitarios(1,"y",a,c_elipse[1])
+_y_j = unitarios(-1,"y",a,c_elipse[1])
+
+#text unitarios
+txt_x = textVector('i',x_i,1.5)
+txt_x_= textVector('-i',_x_i,1.5)
+txt_y=textVector('j',y_j,1.5)
+txt_y_=textVector('-j',_y_j,1.5)
+
+#text semiejes
+txt_a=textVector('a',x_i,1.0)
+txt_a.pos = vector(a,0,0)
+txt_a_=textVector('-a',x_i,1.0)
+txt_a_.pos = vector(-a,0,0)
+txt_b=textVector('b',x_i,1.0)
+txt_b.pos = vector(0,c_elipse[1],0)
+txt_b_=textVector('-b',x_i,1.0)
+txt_b_.pos = vector(0,-c_elipse[1],0)
+
+#vectores polares
+rho=arrow(pos=planet.pos,axis=vector(cos(theta),sin(theta),0),color=color.cyan,shaftwidth = 0.1)
+txt_rho = textVector('P',rho,1)
+
+dthetaFlecha=arrow(pos=planet.pos,axis=vector(-sin(theta),cos(theta),0),color=color.red,shaftwidth = 0.1)
+txt_dtheta = textVector('0',dthetaFlecha,1)
+scene.caption = "\nVariacion en velocidad angular planeta naranjo: \n\n"
+
+def setspeed(s):
+    wt.text = '{:1.3f}'.format(s.value)
+    
+sl = slider(min=0, max=5, value=dtheta, length=220, bind=setspeed, right=15)
+wt = wtext(text='{:1.3f}'.format(sl.value))
+scene.append_to_caption(' -- velocidad angular 1\n')
+
+scene.append_to_caption("\nVariacion en velocidad angular planeta verde: \n")
+
+def setspeed2(slide):
+    wt2.text = '{:1.2f}'.format(slide.value)
+
+sl2 = slider(min=0.70, max=5, value=dthetachico, length=220, bind=setspeed2, right=15)
+wt2 = wtext(text='{:1.2f}'.format(sl2.value))
+scene.append_to_caption(' -- velocidad angular 2\n')
+
+#movimiento choro eliptico
 while True:
-	normal.visible = True
-	for i in range(len(T)):
-		rate(60)
-		if i<k: #MCU
-			theta = T[i]
-			omega = Tp[i]
-			
-			e.pos=normal.pos=p.pos=vector(rA*n.sin(theta),rA*n.cos(theta),0)
-			normal.axis=m*(g*n.cos(theta)-rA*(omega**2))*vector(sin(theta),cos(theta),0)
-			if not e.make_trail:
-				e.make_trail = True
-				e.clear_trail()
-				 
-		else:  #Caida libre
-			if not e.make_trail: e.make_trail = True
-			e.pos=p.pos=r0+v0*(dt[i]-dt[k])+0.5*((dt[i]-dt[k])**2)*vector(0,-g,0)
-			normal.visible = False
-	e.make_trail=False
-	e.clear_trail()
+    rate(2000)
+    #actualizacion dr c/r al angulo theta
+    if running:
+      r = a*(1-pow(e,2))/(1-e*cos(theta))
+      rchico = a*(1-pow(e,2))/(1+e)
+      #actualizacion mov satelite c/r al angulo
+      planet.pos=vector(r*cos(theta)-c_elipse[3],r*sin(theta),0)
 
+      planet_circulo.pos=vector(rchico*cos(thetachico)+c_elipse[3],rchico*sin(thetachico),0)
 
+      #actualizacion direccion y sentido vectores polares
+      rho.axis = vector(cos(theta), sin(theta), 0)*5
+      dthetaFlecha.axis = vector(-sin(theta), cos(theta), 0)*5
+
+      #actualizacion posicion vectores polares
+      rho.pos = dthetaFlecha.pos = planet.pos
+      #Letritas
+      txt_rho.pos = rho.pos + rho.axis
+      txt_dtheta.pos = dthetaFlecha.pos + dthetaFlecha.axis
+
+      #cambio angulo theha
+      theta=theta+sl.value*dt
+      thetachico =thetachico+sl2.value*dt
